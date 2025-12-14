@@ -1,0 +1,146 @@
+paths:
+  /payment/fetch-admin:
+    get:
+      tags: [Payment (Admin)]
+      summary: Get all payments (admin)
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: Filter payments by user ID
+        - in: query
+          name: status
+          schema:
+            type: string
+            description: Filter payments by status (e.g., UNPAID, PAID, FAILED)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Payments fetched successfully
+        '500':
+          description: Server error
+
+  /payment/fetch:
+    get:
+      tags: [Payment (User)]
+      summary: Get current user's payments
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+            description: Filter payments by status (e.g., UNPAID, PAID, FAILED)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: User payments fetched successfully
+        '400':
+          description: Missing user ID
+        '500':
+          description: Server error
+
+  /payment/details/{paymentId}:
+    get:
+      tags: [Payment (User)]
+      summary: Get payment details by ID
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: integer
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Payment details fetched successfully
+        '400':
+          description: Missing user ID
+        '404':
+          description: Payment not found
+
+  /payment/create:
+    post:
+      tags: [Payment (User)]
+      summary: Create a new payment
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderId:
+                  type: string
+                  description: Related order ID
+                method:
+                  type: string
+                  description: Payment method (COD, VNPAY, etc.)
+                amount:
+                  type: number
+                  description: Amount to be paid
+                currency:
+                  type: string
+                  description: Currency code (default: VND)
+      responses:
+        '201':
+          description: Payment created successfully
+        '400':
+          description: Invalid payment method or bad request
+
+  /payment/update/{paymentId}:
+    put:
+      tags: [Payment (Admin)]
+      summary: Update payment information
+      parameters:
+        - in: path
+          name: paymentId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Fields to update (status, amount, method, etc.)
+      responses:
+        '200':
+          description: Payment updated successfully
+        '400':
+          description: Bad request
+

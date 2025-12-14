@@ -1,0 +1,98 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7
+    container_name: redis-ecommerce-nodejs
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ['redis-server', '/usr/local/etc/redis/redis.conf']
+  user-service:
+    build: ./user-service
+    container_name: user-service
+    ports:
+      - '5000:5000'
+    env_file:
+      - ./user-service/.env
+      - ./user-service/.env.dev
+    depends_on:
+      - redis
+  product-service:
+    build: ./product-service
+    container_name: product-service
+    ports:
+      - '5001:5001'
+    env_file:
+      - ./product-service/.env
+      - ./product-service/.env.dev
+    depends_on:
+      - redis
+  cart-service:
+    build: ./cart-service
+    container_name: cart-service
+    ports:
+      - '5002:5002'
+    env_file:
+      - ./cart-service/.env
+      - ./cart-service/.env.dev
+    depends_on:
+      - redis
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - '5003:5003'
+    env_file:
+      - ./order-service/.env
+      - ./order-service/.env.dev
+    depends_on:
+      - redis
+  voucher-service:
+    build: ./voucher-service
+    container_name: voucher-service
+    ports:
+      - '5004:5004'
+    env_file:
+      - ./voucher-service/.env
+      - ./voucher-service/.env.dev
+    depends_on:
+      - redis
+  notification-service: 
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - '5005:5005'
+    env_file:
+      - ./notification-service/.env
+      - ./notification-service/.env.dev
+    depends_on:
+      - redis
+  media-service: 
+    build: ./media-service
+    image: 52200053/ecommerce-nodejs-media-service:latest
+    container_name: media-service
+    ports:
+      - '5006:5006'
+    env_file:
+      - ./media-service/.env
+      - ./media-service/.env.dev
+    depends_on:
+      - redis
+  api-gateway: 
+    build: ./api-gateway
+    image: 52200053/ecommerce-nodejs-api-gateway:latest
+    container_name: api-gateway
+    ports:
+      - '8080:8080'
+    env_file:
+      - ./api-gateway/.env
+      - ./api-gateway/.env.dev
+    depends_on:
+      - user-service
+      - product-service
+      - cart-service
+      - order-service
+      - voucher-service
+      - notification-service
+      - media-service

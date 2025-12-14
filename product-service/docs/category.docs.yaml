@@ -1,0 +1,111 @@
+paths:
+  /category/create:
+    post:
+      tags: [Category]
+      summary: Create a new category
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                parentId:
+                  type: integer
+                description:
+                  type: string
+      responses:
+        '201':
+          description: Category created successfully
+        '400':
+          description: Bad request
+
+  /category/all:
+    get:
+      tags: [Category]
+      summary: Get all categories
+      parameters:
+        - name: parentId
+          in: query
+          schema:
+            type: integer
+        - name: activeOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Categories fetched successfully
+        '400':
+          description: Bad request
+
+  /category/details/{id}:
+    get:
+      tags: [Category]
+      summary: Get category details by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: activeOnly
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Category fetched successfully
+        '404':
+          description: Category not found
+
+  /category/update/{id}:
+    put:
+      tags: [Category]
+      summary: Update a category
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                parentId:
+                  type: integer
+                description:
+                  type: string
+      responses:
+        '200':
+          description: Category updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Category not found
+
+  /category/toggle-status/{id}:
+    patch:
+      tags: [Category]
+      summary: Toggle category status (active/deleted)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Category status updated successfully
+        '404':
+          description: Category not found

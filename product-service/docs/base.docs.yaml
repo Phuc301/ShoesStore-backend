@@ -1,0 +1,9 @@
+openapi: 3.0.0
+info:
+  title: Product Service API
+  description: API documentation for the Product Service.
+  version: 1.0.0
+tags:
+  - name: Category
+  - name: Product
+paths: {}

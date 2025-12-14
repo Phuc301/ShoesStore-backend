@@ -1,0 +1,184 @@
+paths:
+  /review/create:
+    post:
+      tags: [Review]
+      summary: Create a new review
+      parameters:
+        - name: x-user-id
+          in: header
+          schema:
+            type: integer
+          required: false
+          description: Authenticated user ID (if available)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - comment
+              properties:
+                productId:
+                  type: integer
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+      responses:
+        '201':
+          description: Review created successfully
+        '400':
+          description: Bad request
+  
+  /review/guest-create:
+    post:
+      tags: [Review]
+      summary: Create a new review as a guest
+      parameters:
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - productId
+                - comment
+              properties:
+                productId:
+                  type: integer
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                guestName:
+                  type: string
+                guestEmail:
+                  type: string
+      responses:
+        '201':
+          description: Review created successfully
+        '400':
+          description: Bad request
+
+  /review/product/{productId}:
+    get:
+      tags: [Review]
+      summary: Get reviews for a product with pagination and optional filters
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 5
+        - name: sentiment
+          in: query
+          schema:
+            type: string
+            enum: [Positive, Negative, Neutral]
+          description: Filter reviews by sentiment
+        - name: rating
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+          description: Filter reviews by rating (1–5 stars)
+      responses:
+        '200':
+          description: Reviews fetched successfully
+        '400':
+          description: Bad request
+
+  /review/details/{id}:
+    get:
+      tags: [Review]
+      summary: Get a review by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Review fetched successfully
+        '404':
+          description: Review not found
+
+  /review/update/{id}:
+    put:
+      tags: [Review]
+      summary: Update a review (only by owner)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: x-user-id
+          in: header
+          schema:
+            type: integer
+          required: true
+          description: Authenticated user ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment:
+                  type: string
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+      responses:
+        '200':
+          description: Review updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Review not found
+
+  /review/deleted/{id}:
+    delete:
+      tags: [Review]
+      summary: Delete a review (only by owner)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - name: x-user-id
+          in: header
+          schema:
+            type: integer
+          required: true
+          description: Authenticated user ID
+      responses:
+        '200':
+          description: Review deleted successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Review not found

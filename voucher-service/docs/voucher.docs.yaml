@@ -1,0 +1,192 @@
+paths:
+  /voucher/create:
+    post:
+      tags: [Voucher]
+      summary: Create a new voucher
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - discountValue
+                - discountType
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                discountValue:
+                  type: number
+                discountType:
+                  type: string
+                  enum: [PERCENTAGE, FIXED]
+                usageLimit:
+                  type: integer
+                minOrderValue:
+                  type: number
+                maxDiscountValue:
+                  type: number
+                isActive:
+                  type: boolean
+      responses:
+        '201':
+          description: Voucher created successfully
+        '400':
+          description: Bad request
+
+  /voucher/all:
+    get:
+      tags: [Voucher]
+      summary: Get all vouchers with usage history
+      responses:
+        '200':
+          description: Vouchers fetched successfully
+        '400':
+          description: Bad request
+
+  /voucher/details/{id}:
+    get:
+      tags: [Voucher]
+      summary: Get voucher details by ID including usages
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Voucher fetched successfully
+        '404':
+          description: Voucher not found
+
+  /voucher/update/{id}:
+    put:
+      tags: [Voucher]
+      summary: Update a voucher
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                code:
+                  type: string
+                description:
+                  type: string
+                discountValue:
+                  type: number
+                discountType:
+                  type: string
+                  enum: [PERCENTAGE, FIXED]
+                usageLimit:
+                  type: integer
+                minOrderValue:
+                  type: number
+                maxDiscountValue:
+                  type: number
+                isActive:
+                  type: boolean
+      responses:
+        '200':
+          description: Voucher updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Voucher not found
+
+  /voucher/toggle-status/{id}:
+    patch:
+      tags: [Voucher]
+      summary: Toggle voucher active/deactive
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Voucher status updated successfully
+        '404':
+          description: Voucher not found
+
+  /voucher/apply:
+    post:
+      tags: [Voucher]
+      summary: Apply voucher to an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - code
+                - orderTotal
+                - orderId
+              properties:
+                code:
+                  type: string
+                orderTotal:
+                  type: number
+                orderId:
+                  type: string
+      responses:
+        '200':
+          description: Voucher applied successfully
+        '400':
+          description: Error applying voucher
+
+  /voucher/cancel-apply:
+    post:
+      tags: [Voucher]
+      summary: Cancel a voucher applied to an order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - orderId
+              properties:
+                orderId:
+                  type: string
+      responses:
+        '200':
+          description: Voucher usage canceled successfully
+        '400':
+          description: Error canceling voucher
+
+  /voucher/usages:
+    get:
+      tags: [Voucher]
+      summary: Get all voucher usages
+      parameters:
+        - name: voucherId
+          in: query
+          schema:
+            type: integer
+        - name: userId
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Voucher usages fetched successfully
+        '400':
+          description: Bad request

@@ -1,0 +1,116 @@
+paths:
+  /cart-item/add:
+    post:
+      tags: [CartItem]
+      summary: Add one or multiple items to a cart
+      parameters:
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: integer
+          description: User ID if logged in
+        - in: header
+          name: x-session-id
+          required: false
+          schema:
+            type: string
+          description: Session ID if not logged in
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required: [productId, quantity, price]
+                  properties:
+                    productId:
+                      type: string
+                    variantId:
+                      type: string
+                    quantity:
+                      type: integer
+                    price:
+                      type: number
+                - type: array
+                  items:
+                    type: object
+                    required: [productId, quantity, price]
+                    properties:
+                      productId:
+                        type: string
+                      variantId:
+                        type: string
+                      quantity:
+                        type: integer
+                      price:
+                        type: number
+      responses:
+        '201':
+          description: Items added successfully
+        '400':
+          description: Bad request
+
+  /cart-item/get/{cartId}:
+    get:
+      tags: [CartItem]
+      summary: Get all items in a cart by cartId
+      parameters:
+        - in: path
+          name: cartId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cart items fetched successfully
+        '400':
+          description: Bad request
+
+  /cart-item/update/{id}:
+    put:
+      tags: [CartItem]
+      summary: Update a cart item (quantity, price, etc.)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: integer
+                price:
+                  type: number
+      responses:
+        '200':
+          description: Cart item updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Cart item not found
+
+  /cart-item/remove/{id}:
+    delete:
+      tags: [CartItem]
+      summary: Remove a cart item by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cart item removed successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Cart item not found

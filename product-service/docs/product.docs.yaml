@@ -1,0 +1,195 @@
+paths:
+  /product/create:
+    post:
+      tags: [Product]
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - brand
+                - categoryId
+                - description
+                - basePrice
+              properties:
+                name:
+                  type: string
+                title:
+                  type: string
+                brand:
+                  type: string
+                categoryId:
+                  type: integer
+                description:
+                  type: string
+                basePrice:
+                  type: number
+                attributes:
+                  type: object
+                variants:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      color:
+                        type: string
+                      images:
+                        type: array
+                        items:
+                          type: string
+                      sizes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            size:
+                              type: string
+                            price:
+                              type: number
+                            stock:
+                              type: integer
+      responses:
+        '201':
+          description: Product created successfully
+        '400':
+          description: Bad request
+
+  /product/fetch:
+    get:
+      tags: [Product]
+      summary: Get all products with filter & pagination
+      parameters:
+        - name: categoryId
+          in: query
+          schema:
+            type: integer
+        - name: brand
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: isDeleted
+          in: query
+          schema:
+            type: boolean
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Products fetched successfully
+        '400':
+          description: Bad request
+
+  /product/details/{id}:
+    get:
+      tags: [Product]
+      summary: Get product details by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product fetched successfully
+        '404':
+          description: Product not found
+
+  /product/details-by-color-sku/{sku}:
+    get:
+      tags: [Product]
+      summary: Get product by color SKU
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Product fetched successfully
+        '404':
+          description: Product not found
+
+  /product/update/{id}:
+    put:
+      tags: [Product]
+      summary: Update product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Product updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Product not found
+
+  /product/update-size/{sku}:
+    put:
+      tags: [Product]
+      summary: Update product size variant by SKU
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                stock:
+                  type: integer
+                price:
+                  type: number
+      responses:
+        '200':
+          description: Product variant updated successfully
+        '400':
+          description: Bad request
+        '404':
+          description: Variant not found
+
+  /product/toggle-status/{id}:
+    patch:
+      tags: [Product]
+      summary: Toggle product status (delete/restore)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Product status updated successfully
+        '404':
+          description: Product not found

@@ -1,0 +1,86 @@
+paths:
+  /loyalty/add:
+    post:
+      tags: [Loyalty]
+      summary: Add loyalty points to a user
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - points
+              properties:
+                points:
+                  type: number
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Points added successfully
+        '400':
+          description: Bad request (user not found, validation errors)
+
+  /loyalty/deduct:
+    post:
+      tags: [Loyalty]
+      summary: Deduct loyalty points from a user
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - points
+              properties:
+                points:
+                  type: number
+                reason:
+                  type: string
+      responses:
+        '200':
+          description: Points deducted successfully
+        '400':
+          description: Bad request (user not found, not enough points, etc.)
+
+  /loyalty/history:
+    get:
+      tags: [Loyalty]
+      summary: Get loyalty points history
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: Loyalty history fetched successfully
+        '400':
+          description: Bad request (user not found, validation errors)

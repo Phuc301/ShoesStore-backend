@@ -1,0 +1,61 @@
+{
+  "name": "product-service",
+  "version": "1.0.0",
+  "description": "Product service for ecommerce-backend-nodejs using Express and TypeScript",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "ts-node-dev --quiet --respawn --transpile-only src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "watch": "concurrently \"tsc -w\" \"nodemon dist/server.js\"",
+    "lint": "eslint . --ext .ts",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "express",
+    "typescript",
+    "nodejs",
+    "microservice",
+    "product-service"
+  ],
+  "author": "Bao Ngo Le Gia and Phuc Nguyen Thien",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "24.3.0",
+    "@types/node-fetch": "^2.6.13",
+    "@types/sentiment": "^5.0.4",
+    "@types/swagger-ui-express": "^4.1.8",
+    "@types/ws": "^8.18.1",
+    "@types/yamljs": "^0.2.34",
+    "@typescript-eslint/eslint-plugin": "8.8.0",
+    "@typescript-eslint/parser": "8.8.0",
+    "concurrently": "9.2.1",
+    "eslint": "9.9.1",
+    "nodemon": "3.1.10",
+    "prettier": "3.3.3",
+    "ts-node-dev": "2.0.0",
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "dotenv": "16.4.5",
+    "express": "5.1.0",
+    "formdata-node": "^6.0.3",
+    "ioredis": "^5.8.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "node-fetch": "^2.7.0",
+    "openai": "^5.19.1",
+    "sentiment": "^5.0.2",
+    "slugify": "^1.6.6",
+    "swagger-ui-express": "^5.0.1",
+    "ws": "^8.18.3",
+    "yamljs": "^0.3.0"
+  }
+}

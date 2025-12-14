@@ -1,0 +1,56 @@
+paths:
+  /codes/create:
+    post:
+      tags: [Code]
+      summary: Generate a new verification code
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - type
+              properties:
+                type:
+                  type: string
+                  enum:
+                    - ACCOUNT_VERIFICATION
+                    - PASSWORD_RESET
+                    - OTHER
+      responses:
+        '201':
+          description: Code created successfully
+        '400':
+          description: Invalid request
+
+  /codes/verify:
+    get:
+      tags: [Code]
+      summary: Verify a code
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - ACCOUNT_VERIFICATION
+              - PASSWORD_RESET
+              - OTHER
+      responses:
+        '200':
+          description: Code verified successfully
+        '400':
+          description: Invalid or expired code

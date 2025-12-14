@@ -1,0 +1,102 @@
+paths:
+  /users/me:
+    get:
+      tags: [User]
+      summary: Get logged-in user profile
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User profile fetched successfully
+        '404':
+          description: User not found
+
+  /users/update:
+    put:
+      tags: [User]
+      summary: Update user profile
+      parameters:
+        - name: X-User-Id
+          in: header
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                avatarUrl:
+                  type: string
+      responses:
+        '200':
+          description: Profile updated successfully
+        '400':
+          description: Bad request
+
+  /users/all:
+    get:
+      tags: [User]
+      summary: List all users (admin only)
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+        - name: isActive
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Users fetched successfully
+        '403':
+          description: Forbidden (admin only)
+
+  /users/user-details/{userId}:
+    get:
+      tags: [User]
+      summary: Get user details by ID (admin only)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User details fetched successfully
+        '404':
+          description: User not found
+        '403':
+          description: Forbidden (admin only)
+
+  /users/delete/{userId}:
+    delete:
+      tags: [User]
+      summary: Deactivate user (admin only)
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: User deactivated successfully
+        '404':
+          description: User not found
+        '403':
+          description: Forbidden (admin only)

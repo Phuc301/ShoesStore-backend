@@ -1,0 +1,86 @@
+on:
+  push:
+    branches:
+      - main
+      - 'production/**'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set IMAGE_TAG
+        run: |
+          BRANCH_NAME="${GITHUB_REF_NAME}"
+          if [ "$BRANCH_NAME" = "main" ]; then
+            echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          elif [[ "$BRANCH_NAME" =~ ^production/([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            VERSION="${BASH_REMATCH[1]}"
+            echo "IMAGE_TAG=$VERSION" >> $GITHUB_ENV
+          else
+            echo "Branch $BRANCH_NAME is invalid, stopping the pipeline."
+            exit 1
+          fi
+
+      - name: Microservices Docker Pipeline
+        run: |
+          declare -A services=(
+            ["api-gateway"]="ecommerce-nodejs-api-gateway"
+            ["user-service"]="ecommerce-nodejs-user-service"
+            ["product-service"]="ecommerce-nodejs-product-service"
+            ["cart-service"]="ecommerce-nodejs-cart-service"
+            ["order-service"]="ecommerce-nodejs-order-service"
+            ["voucher-service"]="ecommerce-nodejs-voucher-service"
+            ["notification-service"]="ecommerce-nodejs-notification-service"
+            ["media-service"]="ecommerce-nodejs-media-service"
+          )
+          for dir in "${!services[@]}"; do
+            image="${{ secrets.DOCKERHUB_USERNAME }}/${services[$dir]}:${IMAGE_TAG}"
+            docker build -t $image ./$dir
+            docker push $image
+          done
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            if [ ! -d "/home/ec2-user/ecommerce" ]; then
+              cd /home/ec2-user
+              git clone https://${{ secrets.GH_PAT }}@github.com/NgoLeGiaBao/ecommerce-backend-nodejs.git ecommerce
+            fi
+            cd /home/ec2-user/ecommerce
+            git pull origin main
+            # Create .env files from secrets
+            declare -A env_files=(
+              ["api-gateway"]="${{ secrets.API_GATEWAY_ENV }}"
+              ["user-service"]="${{ secrets.USER_SERVICE_ENV }}"
+              ["product-service"]="${{ secrets.PRODUCT_SERVICE_ENV }}"
+              ["cart-service"]="${{ secrets.CART_SERVICE_ENV }}"
+              ["order-service"]="${{ secrets.ORDER_SERVICE_ENV }}"
+              ["voucher-service"]="${{ secrets.VOUCHER_SERVICE_ENV }}"
+              ["notification-service"]="${{ secrets.NOTIFICATION_SERVICE_ENV }}"
+              ["media-service"]="${{ secrets.MEDIA_SERVICE_ENV }}"
+            )
+
+            for dir in "${!env_files[@]}"; do
+              echo "${env_files[$dir]}" > $dir/.env
+            done
+
+            docker-compose -f docker-compose.prod.yml down
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d --remove-orphans

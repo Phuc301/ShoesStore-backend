@@ -1,0 +1,9 @@
+openapi: 3.0.0
+info:
+  title: Cart Service API
+  description: API documentation for the Cart Service.
+  version: 1.0.0
+tags:
+  - name: Cart
+  - name: CartItem
+paths: {}

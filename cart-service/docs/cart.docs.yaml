@@ -1,0 +1,92 @@
+paths:
+  /cart/create:
+    post:
+      tags: [Cart]
+      summary: Create a cart for user or session
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: integer
+                  description: User ID if logged in
+                sessionId:
+                  type: string
+                  description: Session ID if not logged in
+      responses:
+        '201':
+          description: Cart created successfully
+        '400':
+          description: Missing user or session
+
+  /cart/by-user:
+    get:
+      tags: [Cart]
+      summary: Get cart by userId
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cart fetched successfully
+        '400':
+          description: Bad request
+
+  /cart/by-session:
+    get:
+      tags: [Cart]
+      summary: Get cart by sessionId
+      parameters:
+        - in: header
+          name: x-session-id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Cart fetched successfully
+        '400':
+          description: Bad request
+
+  /cart/clear/{cartId}:
+    delete:
+      tags: [Cart]
+      summary: Clear all items in a cart
+      parameters:
+        - in: path
+          name: cartId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Cart items cleared successfully
+        '400':
+          description: Bad request
+
+  /cart/merge:
+    patch:
+      tags: [Cart]
+      summary: Merge session cart into user cart
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: integer
+        - in: header
+          name: x-session-id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Session cart merged into user cart successfully
+        '400':
+          description: Missing userId or sessionId
